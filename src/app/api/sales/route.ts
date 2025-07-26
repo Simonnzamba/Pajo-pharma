@@ -70,10 +70,12 @@ export async function POST(request: Request) {
 
     return NextResponse.json(result, { status: 201 });
 
-  } catch (error: Error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la création de la vente (serveur):', error);
-    // Assurez-vous que l'objet d'erreur est sérialisable
-    const errorMessage = error.message || 'Erreur interne du serveur';
+    let errorMessage = 'Erreur interne du serveur';
+    if (error instanceof Error) {
+        errorMessage = error.message;
+    }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
