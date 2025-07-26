@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
 
 // GET /api/sales/[saleId] - Récupérer une vente spécifique
-export async function GET(request: Request, { params }: { params: { saleId: string } }) {
+export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) {
-    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
+    return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
-  const saleId = params.saleId;
+  const saleId = req.nextUrl.pathname.split('/').pop();
 
   if (!saleId) {
-    return NextResponse.json({ error: 'ID de vente manquant' }, { status: 400 });
+    return new Response(JSON.stringify({ error: 'ID de vente manquant' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   try {
@@ -31,45 +31,45 @@ export async function GET(request: Request, { params }: { params: { saleId: stri
     });
 
     if (!sale) {
-      return NextResponse.json({ error: 'Vente non trouvée' }, { status: 404 });
+      return new Response(JSON.stringify({ error: 'Vente non trouvée' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
     }
 
-    return NextResponse.json(sale);
-  } catch (error: Error) {
+    return new Response(JSON.stringify(sale), { status: 200, headers: { 'Content-Type': 'application/json' } });
+  } catch (error: any) {
     console.error('Erreur lors de la récupération de la vente (serveur):', error);
     const errorMessage = error.message || 'Erreur interne du serveur';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
 
 // PUT /api/sales/[saleId] - Mettre à jour une vente existante
-export async function PUT(request: Request, { params }: { params: { saleId: string } }) {
+export async function PUT(req: NextRequest) {
   const session = await getServerSession(authOptions);
   console.log("API PUT /api/sales/[saleId]: Requête reçue.");
   if (session?.user?.role !== 'admin') {
     console.log("API PUT: Non autorisé.");
-    return NextResponse.json({ error: 'Non autorisé' }, { status: 403 });
+    return new Response(JSON.stringify({ error: 'Non autorisé' }), { status: 403, headers: { 'Content-Type': 'application/json' } });
   }
 
-  const saleId = params.saleId;
+  const saleId = req.nextUrl.pathname.split('/').pop();
   console.log("API PUT: saleId =", saleId);
 
   if (!saleId) {
     console.log("API PUT: ID de vente manquant.");
-    return NextResponse.json({ error: 'ID de vente manquant' }, { status: 400 });
+    return new Response(JSON.stringify({ error: 'ID de vente manquant' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
   }
 
   try {
-    const { clientName, items, totalAmount } = await request.json();
+    const { clientName, items, totalAmount } = await req.json();
     console.log("API PUT: Données reçues:", { clientName, items, totalAmount });
 
     if (!items || items.length === 0) {
       console.log("API PUT: Articles de vente vides.");
-      return NextResponse.json({ error: 'Les articles de la vente ne peuvent pas être vides' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'Les articles de la vente ne peuvent pas être vides' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
     if (!clientName) {
       console.log("API PUT: Nom du client requis.");
-      return NextResponse.json({ error: 'Le nom du client est requis' }, { status: 400 });
+      return new Response(JSON.stringify({ error: 'Le nom du client est requis' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
 
     const result = await prisma.$transaction(async (tx) => {
@@ -155,11 +155,11 @@ export async function PUT(request: Request, { params }: { params: { saleId: stri
     });
 
     console.log("API PUT: Transaction terminée avec succès.");
-    return NextResponse.json(result, { status: 200 });
+    return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
-  } catch (error: Error) {
+  } catch (error: any) {
     console.error('API PUT: Erreur lors de la mise à jour de la vente (serveur):', error);
     const errorMessage = error.message || 'Erreur interne du serveur';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
