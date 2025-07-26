@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id           String @id @default(cuid())
+  username     String @unique
+  passwordHash String
+  role         String // "admin" or "seller"
+  sales        Sale[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Medication {
+  id                   String   @id @default(cuid())
+  name                 String
+  pharmaceuticalForm   String
+  purchasePrice        Float
+  price                Float
+  quantity             Int
+  expirationDate       DateTime
+  barcode              String?  @unique
+  isAvailableForSale   Boolean  @default(false)
+  saleItems            SaleItem[]
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+}
+
+model Client {
+  id        String @id @default(cuid())
+  name      String
+  sales     Sale[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Sale {
+  id             String   @id @default(cuid())
+  date           DateTime @default(now())
+  totalAmount    Float
+  amountPaid     Float
+  changeDue      Float
+  paymentMethod  String
+  additionalFees Float    @default(0)
+  discount       Float    @default(0)
+  remarks        String? // Optional remarks
+  items          SaleItem[]
+  seller         User     @relation(fields: [sellerId], references: [id])
+  sellerId       String
+  client         Client   @relation(fields: [clientId], references: [id])
+  clientId       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model SaleItem {
+  id            String @id @default(cuid())
+  sale          Sale @relation(fields: [saleId], references: [id], onDelete: Cascade)
+  saleId        String
+  medication    Medication @relation(fields: [medicationId], references: [id])
+  medicationId  String
+  quantity      Int
+  priceAtSale   Float
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // e.g., "CREATE", "UPDATE", "DELETE"
+  model     String // e.g., "Medication", "User"
+  recordId  String
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  timestamp DateTime @default(now())
+  oldValue  String?
+  newValue  String?
+}
+
+model InvoiceSettings {
+  id            String @id @default(cuid())
+  companyName   String
+  companyAddress String
+  companyPhone  String
+  companyEmail  String
+  headerText    String?
+  footerText    String?
+  logoUrl       String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
