@@ -1,3 +1,4 @@
+/** @jsxRuntime automatic */
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -31,7 +32,8 @@ export function UsersTable() {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  },
+ []);
 
   const handleFormSubmit = async (data: z.infer<typeof createSchema> | z.infer<typeof updateSchema>) => {
     try {

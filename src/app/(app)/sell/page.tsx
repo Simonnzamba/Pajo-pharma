@@ -342,9 +342,9 @@ export default function SellPage() {
       </Dialog>
 
       {/* Printable Invoice Component (hidden by default) */}
-      <div style={{ display: 'none' }}>
+      {/* <div style={{ display: 'none' }}>
         <PrintableContent ref={printRef} cart={cart} totalAmount={totalAmount} clientName={clientName} />
-      </div>
+      </div> */}
     </div>
   );
 }
