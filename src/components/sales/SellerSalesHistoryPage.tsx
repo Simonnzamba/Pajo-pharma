@@ -37,7 +37,7 @@ export default function SellerSalesHistoryPage() {
   }
 
   if (sales.length === 0) {
-    return <p>Vous n'avez réalisé aucune vente pour le moment.</p>;
+    return <p>Vous n&apos;avez réalisé aucune vente pour le moment.</p>;
   }
 
   return (

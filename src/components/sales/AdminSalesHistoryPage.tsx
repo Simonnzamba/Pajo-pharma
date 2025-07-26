@@ -38,7 +38,7 @@ export default function AdminSalesHistoryPage() {
   }
 
   if (sales.length === 0) {
-    return <p>Aucune vente n'a été enregistrée pour le moment.</p>;
+    return <p>Aucune vente n&apos;a été enregistrée pour le moment.</p>;
   }
 
   return (
