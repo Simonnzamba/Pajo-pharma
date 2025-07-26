@@ -35,9 +35,12 @@ export async function GET(req: NextRequest) {
     }
 
     return new Response(JSON.stringify(sale), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (error: Error) {
+  } catch (error: unknown) {
     console.error('Erreur lors de la récupération de la vente (serveur):', error);
-    const errorMessage = error.message || 'Erreur interne du serveur';
+    let errorMessage = 'Erreur interne du serveur';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
@@ -157,9 +160,12 @@ export async function PUT(req: NextRequest) {
     console.log("API PUT: Transaction terminée avec succès.");
     return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
-  } catch (error: Error) {
+  } catch (error: unknown) {
     console.error('API PUT: Erreur lors de la mise à jour de la vente (serveur):', error);
-    const errorMessage = error.message || 'Erreur interne du serveur';
+    let errorMessage = 'Erreur interne du serveur';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
   }
 }
