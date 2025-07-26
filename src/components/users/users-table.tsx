@@ -11,10 +11,18 @@ import { toast } from 'sonner';
 import * as z from 'zod';
 import { createSchema, updateSchema } from './user-form';
 
+// Define a type for the user being edited, ensuring role is handled correctly.
+// We cast the role from the prisma model to the specific string literals.
+const getEditableUser = (user: User) => ({
+  ...user,
+  role: user.role as 'admin' | 'seller',
+});
+
 export function UsersTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingUser, setEditingUser] = useState<User & { role: 'admin' | 'seller' } | null>(null);
+  // The state for the user being edited now uses the plain User type.
+  const [editingUser, setEditingUser] = useState<User | null>(null);
 
   const fetchUsers = async () => {
     const data = await getUsers();
@@ -26,54 +34,70 @@ export function UsersTable() {
   }, []);
 
   const handleFormSubmit = async (data: z.infer<typeof createSchema> | z.infer<typeof updateSchema>) => {
-    console.log('Form submitted with data:', data);
-    if (editingUser) {
-      const updatePayload: { username: string; password?: string; role?: string } = { username: data.username };
-      if ('password' in data && data.password !== undefined && data.password !== '') {
-        updatePayload.password = data.password;
+    try {
+      if (editingUser) {
+        const updatePayload: { username: string; password?: string; role?: string } = { username: data.username };
+        if ('password' in data && data.password) {
+          updatePayload.password = data.password;
+        }
+        // Use the role from the editingUser state
+        await updateUser(editingUser.id, { ...updatePayload, role: editingUser.role });
+        toast.success('Vendeur mis à jour avec succès!');
+      } else {
+        if (!('password' in data) || !data.password) {
+          toast.error('Le mot de passe est requis pour la création d\'un utilisateur.');
+          return;
+        }
+        await createUser({ username: data.username, password: data.password, role: 'seller' });
+        toast.success('Vendeur ajouté avec succès!');
       }
-      await updateUser(editingUser.id, { ...updatePayload, role: editingUser.role });
-      toast.success('Vendeur mis à jour avec succès!');
-    } else {
-      if (!('password' in data) || data.password === undefined || data.password === '') {
-        toast.error('Le mot de passe est requis pour la création d&apos;un utilisateur.');
-        return;
-      }
-      await createUser({ username: data.username, password: data.password, role: 'seller' });
-      toast.success('Vendeur ajouté avec succès!');
+      fetchUsers();
+      setIsDialogOpen(false);
+      setEditingUser(null);
+    } catch (error) {
+      toast.error("Une erreur s'est produite.");
     }
-    fetchUsers();
-    setIsDialogOpen(false);
-    setEditingUser(null);
   };
 
   const handleDelete = async (userId: string) => {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce vendeur ?')) {
-      await deleteUser(userId);
-      toast.success('Vendeur supprimé avec succès!');
-      fetchUsers();
+      try {
+        await deleteUser(userId);
+        toast.success('Vendeur supprimé avec succès!');
+        fetchUsers();
+      } catch (error) {
+        toast.error("Une erreur s'est produite lors de la suppression.");
+      }
     }
   };
 
-  const handleEditClick = (user: User & { role: 'admin' | 'seller' }) => {
+  const handleEditClick = (user: User) => {
     setEditingUser(user);
     setIsDialogOpen(true);
   };
+
+  const handleAddNewClick = () => {
+    setEditingUser(null);
+    setIsDialogOpen(true);
+  };
+
+  // Prepare defaultValues for the form, ensuring the role is correctly typed.
+  const userFormDefaultValues = editingUser ? getEditableUser(editingUser) : undefined;
 
   return (
     <div>
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
         setIsDialogOpen(open);
-        if (!open) setEditingUser(null); // Clear editing user when dialog closes
+        if (!open) setEditingUser(null);
       }}>
         <DialogTrigger asChild>
-          <Button onClick={() => setEditingUser(null)}>Ajouter un utilisateur</Button>
+          <Button onClick={handleAddNewClick}>Ajouter un utilisateur</Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{editingUser ? 'Modifier l'utilisateur' : 'Ajouter un utilisateur'}</DialogTitle>
+            <DialogTitle>{editingUser ? 'Modifier l\'utilisateur' : 'Ajouter un utilisateur'}</DialogTitle>
           </DialogHeader>
-          <UserForm onSubmit={handleFormSubmit} defaultValues={editingUser || undefined} />
+          <UserForm onSubmit={handleFormSubmit} defaultValues={userFormDefaultValues} />
         </DialogContent>
       </Dialog>
 
@@ -95,7 +119,7 @@ export function UsersTable() {
                 <TableCell className="whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right whitespace-nowrap">
                   <div className="flex flex-col sm:flex-row gap-2 justify-end">
-                    <Button variant="outline" size="sm" onClick={() => handleEditClick(user as any)}>
+                    <Button variant="outline" size="sm" onClick={() => handleEditClick(user)}>
                       Modifier
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => handleDelete(user.id)}>
@@ -104,7 +128,7 @@ export function UsersTable() {
                   </div>
                 </TableCell>
               </TableRow>
-            ))
+            ))}
           </TableBody>
         </Table>
       </div>
