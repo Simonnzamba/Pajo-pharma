@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     }
 
     return new Response(JSON.stringify(sale), { status: 200, headers: { 'Content-Type': 'application/json' } });
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error('Erreur lors de la récupération de la vente (serveur):', error);
     const errorMessage = error.message || 'Erreur interne du serveur';
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
@@ -157,7 +157,7 @@ export async function PUT(req: NextRequest) {
     console.log("API PUT: Transaction terminée avec succès.");
     return new Response(JSON.stringify(result), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
-  } catch (error: any) {
+  } catch (error: Error) {
     console.error('API PUT: Erreur lors de la mise à jour de la vente (serveur):', error);
     const errorMessage = error.message || 'Erreur interne du serveur';
     return new Response(JSON.stringify({ error: errorMessage }), { status: 500, headers: { 'Content-Type': 'application/json' } });
