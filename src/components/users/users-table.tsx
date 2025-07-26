@@ -95,7 +95,7 @@ export function UsersTable() {
                 <TableCell className="whitespace-nowrap">{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right whitespace-nowrap">
                   <div className="flex flex-col sm:flex-row gap-2 justify-end">
-                    <Button variant="outline" size="sm" onClick={() => handleEditClick(user)}>
+                    <Button variant="outline" size="sm" onClick={() => handleEditClick(user as any)}>
                       Modifier
                     </Button>
                     <Button variant="destructive" size="sm" onClick={() => handleDelete(user.id)}>
