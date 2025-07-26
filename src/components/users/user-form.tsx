@@ -73,7 +73,7 @@ export function UserForm({ onSubmit, defaultValues }: UserFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Rôle</FormLabel>
-              <Select onValueChange={field.onChange} defaultValue={field.value}>
+              <Select onValueChange={field.onChange} value={field.value} disabled={isEditing}>
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner un rôle" />
