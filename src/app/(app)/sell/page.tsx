@@ -13,8 +13,6 @@ import { formatCurrency } from '@/lib/utils';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import BarcodeScanner from '@/components/scanner/barcode-scanner';
 import { Label } from '@/components/ui/label';
-import PrintableContent from '@/components/invoice/PrintableContent';
-
 interface Medication {
   id: string;
   name: string;

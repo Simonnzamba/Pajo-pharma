@@ -28,13 +28,13 @@ export default function AdminSalesHistoryPage() {
         setIsLoading(false);
       })
       .catch(error => {
-        console.error("Erreur de chargement de l'historique des ventes:", error);
+        console.error("Erreur de chargement de l&apos;historique des ventes:", error);
         setIsLoading(false);
       });
   }, []);
 
   if (isLoading) {
-    return <p>Chargement de l'historique des ventes...</p>;
+    return <p>Chargement de l&apos;historique des ventes...</p>;
   }
 
   if (sales.length === 0) {

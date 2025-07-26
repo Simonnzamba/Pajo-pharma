@@ -52,7 +52,16 @@ export default function ConfigurationPage() {
         throw new Error('Échec de la mise à jour');
       }
 
-      const updatedSettings = await response.json();      setSettings(updatedSettings);      reset(updatedSettings);      toast.success('Les paramètres de la facture ont été mis à jour.', {        onAutoClose: () => router.push('/admin-dashboard'),      });    } catch (error) {      toast.error('Une erreur s\'est produite lors de la mise à jour.');    }  };
+      const updatedSettings = await response.json();
+      setSettings(updatedSettings);
+      reset(updatedSettings);
+      toast.success('Les paramètres de la facture ont été mis à jour.', {
+        onAutoClose: () => router.push('/admin-dashboard'),
+      });
+    } catch {
+      toast.error('Une erreur s&apos;est produite lors de la mise à jour.');
+    }
+  };
 
   if (!settings) {
     return <p>Chargement des paramètres...</p>;
@@ -77,7 +86,7 @@ export default function ConfigurationPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               <div>
-                <label htmlFor="companyName">Nom de l'entreprise</label>
+                <label htmlFor="companyName">Nom de l&apos;entreprise</label>
                 <Input id="companyName" {...register('companyName')} />
                 {errors.companyName && <p className="text-red-500 text-sm mt-1">{errors.companyName.message}</p>}
               </div>
@@ -97,7 +106,7 @@ export default function ConfigurationPage() {
                 {errors.companyEmail && <p className="text-red-500 text-sm mt-1">{errors.companyEmail.message}</p>}
               </div>
               <div>
-                <label htmlFor="headerText">Texte d'en-tête</label>
+                <label htmlFor="headerText">Texte d&apos;en-tête</label>
                 <Input id="headerText" {...register('headerText')} />
               </div>
               <div>

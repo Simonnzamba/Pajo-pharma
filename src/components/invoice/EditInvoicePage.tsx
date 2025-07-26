@@ -6,7 +6,6 @@ import { useParams } from 'next/navigation';
 import { Sale, SaleItem, Medication, Client, InvoiceSettings } from '@prisma/client';
 import { Invoice } from './invoice';
 import { Button } from '@/components/ui/button';
-import { useReactToPrint } from 'react-to-print';
 import { useRef } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';

@@ -56,7 +56,7 @@ export function UsersTable() {
       fetchUsers();
       setIsDialogOpen(false);
       setEditingUser(null);
-    } catch (error) {
+    } catch {
       toast.error("Une erreur s'est produite.");
     }
   };
@@ -67,7 +67,7 @@ export function UsersTable() {
         await deleteUser(userId);
         toast.success('Vendeur supprimé avec succès!');
         fetchUsers();
-      } catch (error) {
+      } catch {
         toast.error("Une erreur s'est produite lors de la suppression.");
       }
     }
