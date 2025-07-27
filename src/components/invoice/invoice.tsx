@@ -1,4 +1,5 @@
 
+import React from 'react';
 import { Sale, SaleItem, Medication, InvoiceSettings, Client } from '@prisma/client';
 
 interface InvoiceProps {
@@ -6,9 +7,9 @@ interface InvoiceProps {
   settings: InvoiceSettings;
 }
 
-export function Invoice({ sale, settings }: InvoiceProps) {
+export const Invoice = React.forwardRef<HTMLDivElement, InvoiceProps>(({ sale, settings }, ref) => {
   return (
-    <div className="p-8 bg-white text-black">
+    <div ref={ref} className="p-8 bg-white text-black">
       <div className="flex justify-between items-start mb-8 border-b pb-4">
         <div>
           <h1 className="text-3xl font-bold text-blue-600">{settings.companyName}</h1>
@@ -66,4 +67,6 @@ export function Invoice({ sale, settings }: InvoiceProps) {
       </div>
     </div>
   );
-}
+});
+
+Invoice.displayName = 'Invoice';
