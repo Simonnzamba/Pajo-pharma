@@ -18,7 +18,7 @@ import { useRouter } from 'next/navigation';
 export function Cart() {
   const { items, removeItem, updateItemQuantity } = useCartStore();
   const [clientName, setClientName] = useState('');
-  const [lastSale] = useState<(Sale & { items: (SaleItem & { medication: Medication })[]; client: { name: string } }) | null>(null);
+  const [lastSale] = useState<(Sale & { items: (SaleItem & { medication: Medication })[]; client: { id: string; name: string; createdAt: Date; updatedAt: Date; } }) | null>(null);
   const [amountPaid, setAmountPaid] = useState(0);
   const router = useRouter();
 
